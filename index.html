@@ -1,0 +1,1676 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CyberGuard AI — protótipo educacional de análise de riscos de cibersegurança">
+  <title>CyberGuard AI | Central de Segurança</title>
+  <style>
+    :root {
+      --bg: #070d19;
+      --panel: #0d1829;
+      --panel2: #12223a;
+      --line: #1c2e4a;
+      --text: #eef6ff;
+      --muted: #8ca2bf;
+      --mint: #38ef7d;
+      --blue: #2f80ed;
+      --red: #ff3b30;
+      --orange: #ff9500;
+      --yellow: #ffcc00;
+      --green: #34c759;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 50% 0%, #102647 0%, var(--bg) 70%);
+      color: var(--text);
+      font: 14px/1.5 Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #050b14;
+      border-right: 1px solid var(--line);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      color: #050b14;
+      border-radius: 12px;
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 0 15px rgba(56, 239, 125, 0.3);
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .brand small {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+
+    .navlabel {
+      color: #556c88;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      padding: 0 8px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      text-align: left;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: #0f223d;
+      border-color: #1e3a5f;
+      color: var(--text);
+    }
+
+    .nav button.active {
+      box-shadow: inset 3px 0 0 var(--mint);
+    }
+
+    .nav span {
+      color: var(--mint);
+      font-size: 16px;
+    }
+
+    .side-note {
+      margin-top: auto;
+      border: 1px solid var(--line);
+      background: #0a1424;
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    .side-shield-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--mint);
+      background: radial-gradient(circle, rgba(56, 239, 125, 0.2) 0%, transparent 70%);
+      filter: drop-shadow(0 0 8px var(--mint));
+    }
+
+    .side-note b {
+      display: block;
+      color: var(--mint);
+      margin-bottom: 5px;
+    }
+
+    main {
+      padding: 28px clamp(16px, 3vw, 40px);
+      min-width: 0;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 25px;
+      position: relative;
+      background: radial-gradient(ellipse at top, rgba(16, 38, 71, 0.6) 0%, transparent 70%);
+      padding-top: 10px;
+    }
+
+    .top::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 30%;
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--mint), transparent);
+      box-shadow: 0 0 10px var(--mint);
+      opacity: 0.5;
+    }
+
+    .eyebrow {
+      color: var(--mint);
+      font-size: 10px;
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: clamp(25px, 3vw, 34px);
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin: 6px 0;
+    }
+
+    p.sub {
+      color: var(--muted);
+      margin: 8px 0 0;
+      max-width: 720px;
+    }
+
+    .status {
+      border: 1px solid #1e4d3b;
+      background: #092018;
+      color: #64f3c0;
+      border-radius: 99px;
+      padding: 8px 14px;
+      white-space: nowrap;
+      font-size: 11px;
+      box-shadow: 0 0 10px rgba(56, 239, 125, 0.15);
+      display: flex;
+      align-items: center;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--mint);
+      margin-right: 8px;
+      box-shadow: 0 0 8px var(--mint);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .metric,
+    .card {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, #0f1c2e, #091321);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric {
+      padding: 16px;
+      min-height: 122px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .metric-value-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 6px;
+    }
+
+    .metric-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .sparkline {
+      width: 80px;
+      height: 24px;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .sparkline-blue { stroke: #2f80ed; filter: drop-shadow(0 0 4px #2f80ed); }
+    .sparkline-red { stroke: #ff3b30; filter: drop-shadow(0 0 4px #ff3b30); }
+    .sparkline-orange { stroke: #ff9500; filter: drop-shadow(0 0 4px #ff9500); }
+    .sparkline-green { stroke: #38ef7d; filter: drop-shadow(0 0 4px #38ef7d); }
+
+    .metric-note {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      margin-top: 15px;
+    }
+
+    .card {
+      padding: 19px;
+      min-width: 0;
+    }
+
+    .cardhead {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card h2,
+    .card h3 {
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .cardhead p {
+      color: var(--muted);
+      font-size: 11px;
+      margin: 4px 0 0;
+    }
+
+    .tag {
+      font-size: 10px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 4px 8px;
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .bars {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-item {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .bar-label small {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .bar-pill {
+      height: 26px;
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      transition: width 0.3s ease;
+    }
+
+    .pill-critical {
+      background: linear-gradient(90deg, #501317, #ff3b30);
+      box-shadow: 0 0 12px rgba(255, 59, 48, 0.4);
+    }
+
+    .pill-high {
+      background: linear-gradient(90deg, #52310a, #ff9500);
+      box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+    }
+
+    .pill-medium {
+      background: linear-gradient(90deg, #443c0a, #ffcc00);
+      box-shadow: 0 0 12px rgba(255, 204, 0, 0.3);
+    }
+
+    .pill-low {
+      background: linear-gradient(90deg, #104223, #38ef7d);
+      box-shadow: 0 0 12px rgba(56, 239, 125, 0.4);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .tile {
+      background: #0d1a2d;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: left;
+      transition: all 0.2s;
+    }
+
+    .tile:hover {
+      border-color: #2b5280;
+      background: #12223a;
+    }
+
+    .tile b {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .tile small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin: 25px 0 13px;
+    }
+
+    .heading h2 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .heading p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .recent-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .recent-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .recent-card-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #0a1321;
+      border: 1px solid var(--line);
+      position: relative;
+    }
+
+    .recent-card-item.crit { border-left: 3px solid var(--red); }
+    .recent-card-item.high { border-left: 3px solid var(--orange); }
+    .recent-card-item.low { border-left: 3px solid var(--green); }
+
+    .recent-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .recent-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #112238;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .recent-details b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .recent-details small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .globe-illustration {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: radial-gradient(circle, rgba(15, 34, 61, 0.8) 0%, transparent 70%);
+    }
+
+    .globe-graphic {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 1px dashed rgba(56, 239, 125, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 20px rgba(47, 128, 237, 0.2);
+      animation: spin 20s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .sev {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .sev-Crítico { color: #ff9ca5; background: rgba(255, 59, 48, 0.2); border: 1px solid rgba(255, 59, 48, 0.4); }
+    .sev-Alto { color: #ffd09c; background: rgba(255, 149, 0, 0.2); border: 1px solid rgba(255, 149, 0, 0.4); }
+    .sev-Médio { color: #f6e59d; background: rgba(255, 204, 0, 0.2); border: 1px solid rgba(255, 204, 0, 0.4); }
+    .sev-Baixo { color: #9af0c7; background: rgba(56, 239, 125, 0.2); border: 1px solid rgba(56, 239, 125, 0.4); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .fieldgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      background: #081220;
+      color: var(--text);
+      border: 1px solid #1c304a;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.2);
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .primary {
+      background: var(--mint);
+      color: #050b14;
+      box-shadow: 0 0 10px rgba(56, 239, 125, 0.3);
+    }
+
+    .secondary {
+      background: #14263e;
+      border-color: #244166;
+      color: var(--text);
+    }
+
+    .quiet {
+      background: transparent;
+      border-color: var(--line);
+      color: var(--muted);
+    }
+
+    .placeholder {
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .placeholder strong {
+      display: block;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .result {
+      display: none;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    /* Animação de Scanning / Processamento de IA */
+    .scanning-overlay {
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 14px;
+      color: var(--mint);
+    }
+
+    .scanner-radar {
+      width: 64px;
+      height: 64px;
+      border: 3px solid rgba(56, 239, 125, 0.2);
+      border-top-color: var(--mint);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Base de Conhecimento */
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .knowledge-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, #0e1a2b, #091220);
+      padding: 22px;
+      border-radius: 14px;
+      position: relative;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+
+    .knowledge-card:hover {
+      border-color: var(--mint);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(56, 239, 125, 0.15);
+    }
+
+    .knowledge-icon-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(56, 239, 125, 0.1);
+      border: 1px solid rgba(56, 239, 125, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--mint);
+      margin-bottom: 14px;
+      box-shadow: 0 0 10px rgba(56, 239, 125, 0.1);
+    }
+
+    .knowledge-card h3 {
+      font-size: 16px;
+      margin: 0 0 8px 0;
+      color: var(--text);
+    }
+
+    .knowledge-card p {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .card-footer-hint {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--mint);
+      font-weight: 600;
+    }
+
+    /* Modal de Detalhes do Conceito / Ataque */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 8, 16, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: linear-gradient(145deg, #0e1c2f, #081220);
+      border: 1px solid var(--mint);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 620px;
+      padding: 28px;
+      box-shadow: 0 0 30px rgba(56, 239, 125, 0.25);
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-backdrop.active .modal-box {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: var(--mint);
+    }
+
+    .notice {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid #4a3818;
+      background: #21190a;
+      color: #f3d8a7;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+
+    .tablewrap {
+      overflow: auto;
+    }
+
+    .table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 530px;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+    }
+
+    .table th {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      font-size: 10px;
+    }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      margin-top: 28px;
+      padding-top: 14px;
+      color: #556c88;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #092018;
+      border: 1px solid #1e4d3b;
+      color: #64f3c0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: 0.2s;
+      pointer-events: none;
+      box-shadow: 0 0 15px rgba(56, 239, 125, 0.2);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media print {
+      body { background: white !important; color: #111 !important; }
+      .sidebar, .top, .heading, .formcard, .footer, .btns, .notice, header, .status, .modal-backdrop { display: none !important; }
+      .app { display: block !important; }
+      main { padding: 0 !important; }
+      .page { display: none !important; }
+      #analysis.page.active { display: block !important; }
+      #analysis .layout { display: block !important; }
+      #analysis .formcard { display: none !important; }
+      .card {
+        background: white !important;
+        color: #111 !important;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        padding: 20px !important;
+      }
+      .print-header {
+        display: block !important;
+        border-bottom: 2px solid #111;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+      }
+      .print-header h2 { font-size: 22px; color: #111; margin: 0 0 5px 0; }
+      .print-header p { font-size: 12px; color: #551; margin: 0; }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 1050px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .grid2, .layout, .recent-layout, .knowledge-grid { grid-template-columns: 1fr; }
+      .globe-illustration { display: none; }
+    }
+
+    @media (max-width: 700px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { padding: 13px; gap: 13px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .navlabel, .side-note { display: none; }
+      .nav { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+      .nav button { text-align: center; padding: 8px 3px; font-size: 10px; justify-content: center; }
+      main { padding: 20px 13px; }
+      .fieldgrid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div>
+          <strong>CyberGuard AI</strong>
+          <small>SECURITY INTELLIGENCE</small>
+        </div>
+      </div>
+
+      <div>
+        <div class="navlabel">Workspace</div>
+        <nav class="nav" aria-label="Navegação">
+          <button class="active" data-page="dashboard"><span>▦</span>Visão geral</button>
+          <button data-page="analysis"><span>⌕</span>Analisar risco</button>
+          <button data-page="history"><span>◷</span>Histórico</button>
+          <button data-page="knowledge"><span>◇</span>Conhecimento</button>
+        </nav>
+      </div>
+
+      <div class="side-note">
+        <div class="side-shield-icon">🛡️</div>
+        <b>◈ Modo defensivo</b>
+        Protótipo educacional. Nenhum teste é executado em sistemas reais.
+      </div>
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <div class="eyebrow">Centro de operações · Cybersecurity</div>
+          <h1 id="pageTitle">Visão geral</h1>
+          <p class="sub" id="pageSubtitle">Acompanhe os riscos identificados.</p>
+        </div>
+        <div class="status"><span class="dot"></span>Sistema demonstrativo ativo</div>
+      </header>
+
+      <!-- ABA VISÃO GERAL (DASHBOARD) -->
+      <section class="page active" id="dashboard">
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Análises registradas</div>
+            <div class="metric-value-row">
+              <div class="metric-value" id="total">3</div>
+              <svg class="sparkline sparkline-blue" viewBox="0 0 50 20">
+                <path d="M0 15 Q 10 5, 20 12 T 40 8 T 50 10" />
+              </svg>
+            </div>
+            <div class="metric-note">Inclui exemplos fictícios</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Riscos críticos</div>
+            <div class="metric-value-row">
+              <div class="metric-value" id="crit">1</div>
+              <svg class="sparkline sparkline-red" viewBox="0 0 50 20">
+                <path d="M0 18 L 12 10 L 25 15 L 38 4 L 50 8" />
+              </svg>
+            </div>
+            <div class="metric-note">Avaliar com prioridade</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Riscos altos</div>
+            <div class="metric-value-row">
+              <div class="metric-value" id="altos">1</div>
+              <svg class="sparkline sparkline-orange" viewBox="0 0 50 20">
+                <path d="M0 12 L 15 15 L 30 6 L 50 14" />
+              </svg>
+            </div>
+            <div class="metric-note">Planejar correção prioritária</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Riscos baixos</div>
+            <div class="metric-value-row">
+              <div class="metric-value" id="baixos">1</div>
+              <svg class="sparkline sparkline-green" viewBox="0 0 50 20">
+                <path d="M0 8 L 15 12 L 30 5 L 50 16" />
+              </svg>
+            </div>
+            <div class="metric-note">Manter acompanhamento</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardhead">
+              <div>
+                <h2>Distribuição de severidade</h2>
+                <p>Classificação dos cenários nesta sessão</p>
+              </div>
+              <span class="tag">Resumo</span>
+            </div>
+            <div class="bars" id="bars"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardhead">
+              <div>
+                <h2>Ações rápidas</h2>
+                <p>Comece uma análise ou explore o protótipo</p>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="tile" data-goto="analysis">
+                <b>⌕ Nova análise</b>
+                <small>Avaliar uma vulnerabilidade</small>
+              </button>
+              <button class="tile" id="example">
+                <b>▤ Carregar exemplo</b>
+                <small>Preencher cenário fictício</small>
+              </button>
+              <button class="tile" data-goto="history">
+                <b>◷ Histórico</b>
+                <small>Consultar registros</small>
+              </button>
+              <button class="tile" data-goto="knowledge">
+                <b>◇ Conceitos</b>
+                <small>Revisar fundamentos</small>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="heading">
+          <div>
+            <h2>Análises recentes</h2>
+            <p>Cenários fictícios para demonstrar a interface.</p>
+          </div>
+          <button class="btn secondary" data-goto="history">Ver histórico →</button>
+        </div>
+        
+        <div class="card">
+          <div class="recent-layout">
+            <div class="recent-list" id="recent"></div>
+            <div class="globe-illustration">
+              <div class="globe-graphic">
+                <span style="font-size: 32px;">🌐</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA ANALISAR RISCO -->
+      <section class="page" id="analysis">
+        <div class="heading" style="margin-top:0">
+          <div>
+            <h2>Análise de vulnerabilidade</h2>
+            <p>Descreva o cenário para receber uma avaliação preliminar e recomendações defensivas.</p>
+          </div>
+          <span class="tag">Regras locais</span>
+        </div>
+
+        <div class="layout">
+          <div class="card formcard">
+            <div class="cardhead">
+              <div>
+                <h2>Informações do cenário</h2>
+                <p>Preencha os campos conhecidos. Não inclua senhas ou segredos.</p>
+              </div>
+            </div>
+
+            <form id="form">
+              <div class="fieldgrid">
+                <div class="field full">
+                  <label for="asset">Ativo ou sistema afetado *</label>
+                  <input id="asset" name="asset" required maxlength="100" placeholder="Ex.: API de Pagamentos PIX">
+                </div>
+
+                <div class="field full">
+                  <label for="vulnerability">Descrição da vulnerabilidade *</label>
+                  <textarea id="vulnerability" name="vulnerability" required maxlength="1500" placeholder="Descreva a fraqueza identificada ou o cenário que deseja avaliar.">Possível falha de validação de parâmetros (Insecure Direct Object Reference) em endpoint de transferência interna.</textarea>
+                  <span class="hint">Até 1.500 caracteres. Compartilhe somente informações autorizadas.</span>
+                </div>
+
+                <div class="field">
+                  <label for="exposure">Exposição do ativo</label>
+                  <select id="exposure" name="exposure">
+                    <option value="Internet" selected>Exposto à internet</option>
+                    <option value="Rede interna">Rede interna</option>
+                    <option value="Acesso restrito">Acesso restrito</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="criticality">Criticidade do ativo</label>
+                  <select id="criticality" name="criticality">
+                    <option value="Crítica" selected>Crítica — serviço essencial</option>
+                    <option value="Alta">Alta — importante</option>
+                    <option value="Baixa">Baixa — impacto limitado</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="probability">Probabilidade estimada</label>
+                  <select id="probability" name="probability">
+                    <option value="1">Baixa (1)</option>
+                    <option value="3" selected>Média (3)</option>
+                    <option value="5">Alta (5)</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="impact">Impacto potencial</label>
+                  <select id="impact" name="impact">
+                    <option value="1">Baixo (1)</option>
+                    <option value="3">Médio (3)</option>
+                    <option value="5" selected>Alto (5)</option>
+                  </select>
+                </div>
+
+                <div class="field full">
+                  <label for="controls">Controles existentes (opcional)</label>
+                  <input id="controls" name="controls" maxlength="300" value="Firewall de aplicação (WAF) ativo, mas sem validação estrita de token JWT.">
+                </div>
+              </div>
+
+              <div class="btns">
+                <button class="btn primary" type="submit" id="submitBtn">✦ Analisar cenário</button>
+                <button class="btn secondary" type="button" id="fillExample">Preencher exemplo</button>
+                <button class="btn quiet" type="reset" id="reset">Limpar</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="print-header">
+              <h2>CyberGuard AI — Relatório Executivo de Segurança</h2>
+              <p>Projeto Bootcamp Santander · Centro de Operações de Cibersegurança</p>
+            </div>
+
+            <div class="cardhead">
+              <div>
+                <h2>Resultado da análise</h2>
+                <p>Classificação explicável e plano de correção</p>
+              </div>
+              <span class="tag">Prévia</span>
+            </div>
+
+            <div id="scanning" style="display:none;" class="scanning-overlay">
+              <div class="scanner-radar"></div>
+              <div>
+                <strong>CyberGuard AI processando...</strong>
+                <p style="color: var(--muted); font-size: 11px; margin: 4px 0 0;">Analisando heurísticas e vetores de ameaça...</p>
+              </div>
+            </div>
+
+            <div class="result show" id="result" aria-live="polite">
+              <div style="background: rgba(255, 59, 48, 0.08); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+                <span class="sev-Crítico">Crítico</span>
+                <h3 style="margin: 8px 0 4px; font-size: 16px;">API de Pagamentos PIX</h3>
+                <p style="color: var(--muted); font-size: 11px; margin: 0;">Possível falha de validação de parâmetros (IDOR) em endpoint crítico.</p>
+                <div style="margin-top: 10px; font-weight: bold; font-size: 15px; color: var(--red);">Pontuação: 23 / 30 (Risco Elevado)</div>
+              </div>
+              <h4 style="font-size: 13px; margin: 12px 0 6px;">Recomendações da IA:</h4>
+              <ul style="font-size: 11px; color: var(--muted); padding-left: 16px; display: grid; gap: 6px;">
+                <li>Implementar validação rigorosa de autorização baseada em sessões no backend.</li>
+                <li>Aplicar regras adicionais de inspeção de payload no WAF.</li>
+                <li>Executar testes de intrusão simulados no endpoint afetado.</li>
+              </ul>
+            </div>
+            <div class="btns" id="resultButtons" style="display:flex">
+              <button class="btn secondary" id="print">Imprimir / salvar PDF</button>
+              <button class="btn quiet" id="copy">Copiar resumo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice">Importante: esta versão usa regras heurísticas locais, não consulta bases externas e não substitui análise técnica profissional.</div>
+      </section>
+
+      <!-- ABA HISTÓRICO -->
+      <section class="page" id="history">
+        <div class="heading" style="margin-top:0">
+          <div>
+            <h2>Histórico de análises</h2>
+            <p>Resultados registrados durante esta sessão do navegador.</p>
+          </div>
+          <button class="btn secondary" id="export">Exportar CSV</button>
+        </div>
+        <div class="card tablewrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Ativo</th>
+                <th>Vulnerabilidade</th>
+                <th>Severidade</th>
+                <th>Pontuação</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+        <div class="notice">O histórico fica na memória desta página e pode ser perdido ao atualizar ou fechar a aba.</div>
+      </section>
+
+      <!-- ABA CONHECIMENTO -->
+      <section class="page" id="knowledge">
+        <div class="heading" style="margin-top:0">
+          <div>
+            <h2>Conceitos e Ameaças Cibernéticas</h2>
+            <p>Clique em qualquer cartão para ver a explicação técnica completa, exemplos e estratégias de prevenção.</p>
+          </div>
+        </div>
+
+        <div class="knowledge-grid">
+          <div class="knowledge-card" data-topic="vulnerability">
+            <div class="knowledge-icon-badge">◈</div>
+            <h3>Vulnerabilidade</h3>
+            <p>Fraqueza em um sistema, processo ou configuração que pode ser explorada ou contribuir para um incidente de segurança.</p>
+            <div class="card-footer-hint">Clique para saber mais →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="threat">
+            <div class="knowledge-icon-badge">⚡</div>
+            <h3>Ameaça Cibernética</h3>
+            <p>Evento, agente ou circunstância capaz de causar danos a um ativo. Uma ameaça representa um perigo potencial.</p>
+            <div class="card-footer-hint">Clique para saber mais →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="risk">
+            <div class="knowledge-icon-badge">⚖</div>
+            <h3>Risco Cibernético</h3>
+            <p>Possibilidade de uma ameaça explorar uma vulnerabilidade e causar consequências impactantes ao negócio.</p>
+            <div class="card-footer-hint">Clique para saber mais →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="defense">
+            <div class="knowledge-icon-badge">🛡️</div>
+            <h3>Defesa em Profundidade</h3>
+            <p>Estratégia que emprega múltiplas camadas de proteção independentes para garantir a segurança contra falhas.</p>
+            <div class="card-footer-hint">Clique para saber mais →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="phishing">
+            <div class="knowledge-icon-badge">🎣</div>
+            <h3>Phishing e Engenharia Social</h3>
+            <p>Técnica de engano para induzir usuários a fornecer credenciais, dados bancários ou executar arquivos maliciosos.</p>
+            <div class="card-footer-hint">Clique para ver análise do ataque →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="ransomware">
+            <div class="knowledge-icon-badge">🔐</div>
+            <h3>Ransomware</h3>
+            <p>Malware de sequestro que criptografa os dados da vítima e exige resgate para o fornecimento da chave de decodificação.</p>
+            <div class="card-footer-hint">Clique para ver análise do ataque →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="sqli">
+            <div class="knowledge-icon-badge">💉</div>
+            <h3>SQL Injection (SQLi)</h3>
+            <p>Inserção de comandos maliciosos em campos de entrada para manipular bancos de dados e extrair informações confidenciadas.</p>
+            <div class="card-footer-hint">Clique para ver análise do ataque →</div>
+          </div>
+
+          <div class="knowledge-card" data-topic="ddos">
+            <div class="knowledge-icon-badge">💥</div>
+            <h3>Negação de Serviço Distribuição (DDoS)</h3>
+            <p>Sobrecarga intencional de servidores por meio de redes de computadores infectados (botnets) para indisponibilizar serviços.</p>
+            <div class="card-footer-hint">Clique para ver análise do ataque →</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>CyberGuard AI · Protótipo educacional</span>
+        <span>Sem chamadas externas · Regras locais</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL POPUP PARA EXPLICAR ATAQUES E CONCEITOS -->
+  <div class="modal-backdrop" id="knowledgeModal">
+    <div class="modal-box">
+      <button class="modal-close" id="closeModal">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const $ = (seletor) => document.querySelector(seletor);
+
+    let historico = [];
+    let analiseAtual = null;
+
+    // Restaurados os 3 exemplos iniciais para popular o dashboard e o histórico corretamente
+    const exemplos = [
+      {
+        asset: "API de Pagamentos PIX",
+        vulnerability: "Possível falha de validação de parâmetros (IDOR) em endpoint de transferência interna.",
+        exposure: "Internet",
+        criticality: "Crítica",
+        probability: 3,
+        impact: 5,
+        controls: "Firewall de aplicação (WAF) ativo, mas sem validação estrita de token.",
+        icon: "💳"
+      },
+      {
+        asset: "Servidor Web Corporativo",
+        vulnerability: "Software desatualizado com vulnerabilidade conhecida (CVE recente).",
+        exposure: "Internet",
+        criticality: "Alta",
+        probability: 5,
+        impact: 5,
+        controls: "Parcial",
+        icon: "🖥️"
+      },
+      {
+        asset: "Banco de dados de Clientes",
+        vulnerability: "Permissões de acesso excessivas concedidas a contas de serviço.",
+        exposure: "Rede interna",
+        criticality: "Crítica",
+        probability: 3,
+        impact: 4,
+        controls: "Logs de auditoria ativos",
+        icon: "🗄️"
+      }
+    ];
+
+    const detalhesConhecimento = {
+      vulnerability: {
+        titulo: "◈ Vulnerabilidade de Segurança",
+        sub: "Conceito Fundamental de Cibersegurança",
+        descricao: "Uma vulnerabilidade é uma falha de projeto, erro de implementação ou fraqueza de configuração em um software, hardware ou processo administrativo que pode ser explorada por agentes maliciosos.",
+        exemplos: "Sistemas sem atualizações (patches de segurança pendentes), senhas fracas ou padrão, ausência de validação de dados de entrada e falta de controle de acesso adequado.",
+        prevenção: "Gestão contínua de patches, varreduras periódicas de vulnerabilidade (SAST/DAST), auditoria de código e testes de intrusão (PenTests)."
+      },
+      threat: {
+        titulo: "⚡ Ameaça Cibernética",
+        sub: "Agentes e Vetores de Risco",
+        descricao: "Uma ameaça representa qualquer circunstância, indivíduo ou grupo com potencial de causar dano, interrupção ou acesso não autorizado a ativos computacionais.",
+        exemplos: "Grupos de cibercriminosos (ciberativistas, ransomware gangs), insiders maliciosos, softwares nocivos (malwares) ou até desastres naturais que afetem data centers.",
+        prevenção: "Implementação de inteligência de ameaças (Threat Intelligence), monitoramento SOC 24/7, sistemas de detecção de intrusão (IDS/IPS) e treinamentos de conscientização."
+      },
+      risk: {
+        titulo: "⚖ Risco Cibernético",
+        sub: "Cálculo de Probabilidade vs. Impacto",
+        descricao: "O risco é a probabilidade estimada de que uma ameaça específica explore uma vulnerabilidade existente, resultando em perdas financeiras, operacionais ou reputacionais para a organização.",
+        exemplos: "Risco de vazamento de dados de clientes devido à exposição não autorizada de banco de dados na internet sem autenticação.",
+        prevenção: "Avaliação contínua de riscos baseada em matrizes de criticidade, transferência de riscos (seguro cibernético) e aplicação do princípio do menor privilégio."
+      },
+      defense: {
+        titulo: "🛡️ Defesa em Profundidade",
+        sub: "Arquitetura de Segurança em Camadas",
+        descricao: "Princípio defensivo que estabelece múltiplos controles de segurança independentes ao longo de toda a infraestrutura de TI, garantindo que a falha de um elemento não comprometa todo o ambiente.",
+        exemplos: "Combinação de Firewall de Borda + Autenticação Multifator (MFA) + Criptografia de Dados + EDR (Endpoint Detection and Response).",
+        prevenção: "Segmentação de rede, políticas estritas de Zero Trust, controle de acesso baseado em funções (RBAC) e monitoramento contínuo de logs."
+      },
+      phishing: {
+        titulo: "🎣 Phishing e Engenharia Social",
+        sub: "Vetor de Ataque Human-Centric",
+        descricao: "Técnica de engano em que cibercriminosos personificam instituições confiáveis (bancos, empresas ou colegas de trabalho) para manipular indivíduos a revelarem informações confidenciais.",
+        exemplos: "E-mails falsos solicitando recadastramento de senha, mensagens SMS com links maliciosos (Smishing) e contatos telefônicos fraudulentos (Vishing).",
+        prevenção: "Treinamentos periódicos de conscientização, uso obrigatório de chaves de segurança FIDO2/MFA, filtros anti-phishing no servidor de e-mail e SPF/DKIM/DMARC."
+      },
+      ransomware: {
+        titulo: "🔐 Ransomware (Sequestro de Dados)",
+        sub: "Ataque Extorsivo e Criptográfico",
+        descricao: "Tipo de malware altamente destrutivo que criptografa arquivos e bancos de dados do sistema infectado, exigindo pagamento de resgate (geralmente em criptomoedas) para a devolução do acesso.",
+        exemplos: "Ataques WannaCry, LockBit e REvil que paralisaram operações hospitalares, financeiras e governamentais globalmente.",
+        prevenção: "Backups diários e offline (regra 3-2-1), soluções de EDR avançadas, isolamento preventivo de redes e bloqueio de execução de scripts não autorizados."
+      },
+      sqli: {
+        titulo: "💉 SQL Injection (Injeção de SQL)",
+        sub: "Vulnerabilidade Crítica de Aplicação Web",
+        descricao: "Ataque que ocorre quando comandos maliciosos em linguagem SQL são inseridos em campos de entrada de formulários web para manipular a consulta enviada ao banco de dados.",
+        exemplos: "Inserir o trecho `' OR '1'='1` em um campo de login para burlar a validação de usuário e senha, obtendo acesso administrativo.",
+        prevenção: "Uso de consultas preparadas (Prepared Statements / Parameterized Queries), ORMs seguros e validação/sanitização estrita de todos os dados recebidos pelo usuário."
+      },
+      ddos: {
+        titulo: "💥 Negação de Serviço Distribuição (DDoS)",
+        sub: "Ataque contra a Disponibilidade",
+        descricao: "Tentativa maliciosa de indisponibilizar um serviço ou servidor web ao inundá-lo com um volume massivo de tráfego vindo de milhares de dispositivos comprometidos (botnets).",
+        exemplos: "Ataques de amplificação de DNS e inundações HTTP SYN Flood visando tirar do ar o portal de internet de uma instituição financeira durante o horário comercial.",
+        prevenção: "Adoção de serviços de mitigação de DDoS em nuvem (ex.: Cloudflare, Akamai), limitação de taxa (Rate Limiting) e arquitetura de servidores elástica com autoscaling."
+      }
+    };
+
+    function escaparHTML(valor) {
+      return String(valor ?? "").replace(/[&<>"']/g, (caractere) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[caractere]);
+    }
+
+    function mostrarAviso(mensagem) {
+      const toast = $("#toast");
+      if (!toast) return;
+
+      toast.textContent = mensagem;
+      toast.classList.add("show");
+
+      clearTimeout(mostrarAviso.timer);
+      mostrarAviso.timer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    function obterNivel(pontuacao) {
+      if (pontuacao >= 20) return "Crítico";
+      if (pontuacao >= 14) return "Alto";
+      if (pontuacao >= 8) return "Médio";
+      return "Baixo";
+    }
+
+    function calcularRisco(dados) {
+      const probabilidade = Number(dados.probability);
+      const impacto = Number(dados.impact);
+      const criticidade = dados.criticality;
+      const exposicao = dados.exposure;
+
+      let pontuacao = probabilidade * impacto;
+
+      if (exposicao === "Internet") pontuacao += 4;
+      else if (exposicao === "Rede interna") pontuacao += 2;
+
+      if (criticidade === "Crítica") pontuacao += 3;
+      else if (criticidade === "Alta") pontuacao += 2;
+
+      pontuacao = Math.max(1, Math.min(30, pontuacao));
+      const nivel = obterNivel(pontuacao);
+
+      const recomendacoes = [
+        "Implementar validação rigorosa de autorização baseada em sessões no backend.",
+        "Aplicar regras adicionais de inspeção de payload no WAF.",
+        "Executar testes de intrusão simulados no endpoint afetado."
+      ];
+
+      return {
+        ...dados,
+        pontuacao,
+        nivel,
+        recomendacoes,
+        data: new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR"),
+        icon: dados.icon || "💻"
+      };
+    }
+
+    function atualizarPainel() {
+      const total = historico.length;
+      const criticos = historico.filter(a => a.nivel === "Crítico").length;
+      const altos = historico.filter(a => a.nivel === "Alto").length;
+      const baixos = historico.filter(a => a.nivel === "Baixo").length;
+
+      if ($("#total")) $("#total").textContent = total;
+      if ($("#crit")) $("#crit").textContent = criticos;
+      if ($("#altos")) $("#altos").textContent = altos;
+      if ($("#baixos")) $("#baixos").textContent = baixos;
+
+      const barras = $("#bars");
+      if (barras) {
+        const niveis = [
+          { nome: "Crítico", class: "pill-critical" },
+          { nome: "Alto", class: "pill-high" },
+          { nome: "Médio", class: "pill-medium" },
+          { nome: "Baixo", class: "pill-low" }
+        ];
+
+        barras.innerHTML = niveis.map(item => {
+          const quantidade = historico.filter(a => a.nivel === item.nome).length;
+          const pct = total ? Math.max(15, (quantidade / total) * 100) : 0;
+
+          return `
+            <div class="bar-item">
+              <div class="bar-label">
+                ${item.nome}
+                <small>${quantidade}</small>
+              </div>
+              <div class="bar-pill ${item.class}" style="width: ${pct}%;"></div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const recentes = $("#recent");
+      if (recentes) {
+        recentes.innerHTML = historico.slice(0, 3).map(a => {
+          let classType = "low";
+          if (a.nivel === "Crítico") classType = "crit";
+          if (a.nivel === "Alto") classType = "high";
+
+          return `
+            <div class="recent-card-item ${classType}">
+              <div class="recent-info">
+                <div class="recent-icon">${a.icon}</div>
+                <div class="recent-details">
+                  <b>${escaparHTML(a.asset)}</b>
+                  <small>${escaparHTML(a.data)}</small>
+                </div>
+              </div>
+              <span class="sev-${escaparHTML(a.nivel)}">${escaparHTML(a.nivel)}</span>
+            </div>
+          `;
+        }).join("") || "<p>Nenhuma análise registrada.</p>";
+      }
+    }
+
+    function renderizarHistorico() {
+      const corpo = $("#historyBody");
+      if (!corpo) return;
+
+      corpo.innerHTML = historico.map((a, index) => `
+        <tr>
+          <td>${escaparHTML(a.data)}</td>
+          <td>${escaparHTML(a.asset)}</td>
+          <td>${escaparHTML(a.vulnerability)}</td>
+          <td><span class="sev-${escaparHTML(a.nivel)}">${escaparHTML(a.nivel)}</span></td>
+          <td>${a.pontuacao}/30</td>
+          <td><button class="btn secondary" style="padding: 4px 8px; font-size: 10px;" data-view="${index}">Ver</button></td>
+        </tr>
+      `).join("");
+    }
+
+    // Inicialização dos dados e renderização inicial
+    historico = exemplos.map(dados => calcularRisco(dados));
+    analiseAtual = historico[0];
+    atualizarPainel();
+    renderizarHistorico();
+
+    // Modal de Conhecimento
+    document.querySelectorAll(".knowledge-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const topicKey = card.dataset.topic;
+        const info = detalhesConhecimento[topicKey];
+
+        if (info) {
+          $("#modalContent").innerHTML = `
+            <h2 style="font-size: 20px; color: var(--mint); margin-top: 0;">${info.titulo}</h2>
+            <p style="color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-top: -8px; font-weight: bold;">${info.sub}</p>
+            <hr style="border: 0; border-top: 1px solid var(--line); margin: 16px 0;">
+            <div style="font-size: 13px; line-height: 1.6; display: grid; gap: 14px;">
+              <div>
+                <strong style="color: var(--text); display: block; margin-bottom: 4px;">📌 Descrição Técnica:</strong>
+                <p style="margin: 0; color: #c0d1e5;">${info.descricao}</p>
+              </div>
+              <div>
+                <strong style="color: var(--text); display: block; margin-bottom: 4px;">⚠️ Cenários e Vetores de Ataque:</strong>
+                <p style="margin: 0; color: #c0d1e5;">${info.exemplos}</p>
+              </div>
+              <div>
+                <strong style="color: var(--text); display: block; margin-bottom: 4px;">🛡️ Estratégias de Mitigação / Prevenção:</strong>
+                <p style="margin: 0; color: #c0d1e5;">${info.prevenção}</p>
+              </div>
+            </div>
+          `;
+          $("#knowledgeModal").classList.add("active");
+        }
+      });
+    });
+
+    $("#closeModal")?.addEventListener("click", () => {
+      $("#knowledgeModal").classList.remove("active");
+    });
+
+    $("#knowledgeModal")?.addEventListener("click", (e) => {
+      if (e.target === $("#knowledgeModal")) {
+        $("#knowledgeModal").classList.remove("active");
+      }
+    });
+
+    // Navegação entre Abas
+    const titulosPaginas = {
+      dashboard: ["Visão geral", "Acompanhe os riscos identificados."],
+      analysis: ["Analisar risco", "Avalie uma vulnerabilidade ou cenário de risco."],
+      history: ["Histórico", "Consulte as análises de segurança já registradas."],
+      knowledge: ["Conhecimento", "Conceitos fundamentais e catálogo de ataques cibernéticos."]
+    };
+
+    document.querySelectorAll(".nav button[data-page]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const page = btn.dataset.page;
+        
+        document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        $(`#${page}`)?.classList.add("active");
+
+        const info = titulosPaginas[page];
+        if (info) {
+          if ($("#pageTitle")) $("#pageTitle").textContent = info[0];
+          if ($("#pageSubtitle")) $("#pageSubtitle").textContent = info[1];
+        }
+      });
+    });
+
+    document.querySelectorAll("[data-goto]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const dest = btn.dataset.goto;
+        $(`.nav button[data-page="${dest}"]`)?.click();
+      });
+    });
+
+    // Simulação com animação de scanning ao enviar o formulário
+    $("#form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      $("#result").classList.remove("show");
+      $("#scanning").style.display = "flex";
+      $("#resultButtons").style.display = "none";
+
+      const dados = {
+        asset: $("#asset").value,
+        vulnerability: $("#vulnerability").value,
+        exposure: $("#exposure").value,
+        criticality: $("#criticality").value,
+        probability: $("#probability").value,
+        impact: $("#impact").value,
+        controls: $("#controls").value,
+        icon: "💻"
+      };
+
+      setTimeout(() => {
+        analiseAtual = calcularRisco(dados);
+        historico.unshift(analiseAtual);
+        atualizarPainel();
+        renderizarHistorico();
+        
+        const painel = $("#result");
+        let corSev = "var(--red)";
+        if (analiseAtual.nivel === "Alto") corSev = "var(--orange)";
+        if (analiseAtual.nivel === "Médio") corSev = "var(--yellow)";
+        if (analiseAtual.nivel === "Baixo") corSev = "var(--green)";
+
+        painel.innerHTML = `
+          <div style="background: rgba(255, 59, 48, 0.08); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 14px;">
+            <span class="sev-${escaparHTML(analiseAtual.nivel)}">${escaparHTML(analiseAtual.nivel)}</span>
+            <h3 style="margin: 8px 0 4px; font-size: 16px;">${escaparHTML(analiseAtual.asset)}</h3>
+            <p style="color: var(--muted); font-size: 11px; margin: 0;">${escaparHTML(analiseAtual.vulnerability)}</p>
+            <div style="margin-top: 10px; font-weight: bold; font-size: 15px; color: ${corSev};">Pontuação: ${analiseAtual.pontuacao} / 30</div>
+          </div>
+          <h4 style="font-size: 13px; margin: 12px 0 6px;">Recomendações da IA:</h4>
+          <ul style="font-size: 11px; color: var(--muted); padding-left: 16px; display: grid; gap: 6px;">
+            ${analiseAtual.recomendacoes.map(r => `<li>${escaparHTML(r)}</li>`).join("")}
+          </ul>
+        `;
+        $("#scanning").style.display = "none";
+        painel.classList.add("show");
+        $("#resultButtons").style.display = "flex";
+        mostrarAviso("Análise concluída com sucesso!");
+      }, 1200);
+    });
+
+    $("#fillExample")?.addEventListener("click", () => {
+      const ex = exemplos[0];
+      $("#asset").value = ex.asset;
+      $("#vulnerability").value = ex.vulnerability;
+      $("#exposure").value = ex.exposure;
+      $("#criticality").value = ex.criticality;
+      $("#probability").value = ex.probability;
+      $("#impact").value = ex.impact;
+      $("#controls").value = ex.controls;
+      mostrarAviso("Cenário de exemplo carregado!");
+    });
+
+    $("#print")?.addEventListener("click", () => {
+      window.print();
+    });
+  </script>
+</body>
+</html>
