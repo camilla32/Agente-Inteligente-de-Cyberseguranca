@@ -68,10 +68,8 @@ CyberGuard-AI/
 ├── README.md
 ├── agent/
 │   ├── persona.md
-│   └── knowledge/
-│       └── security-basics.md
-└── skills/
-    └── vulnerability-analysis/
+│   └── security-basics.md
+└── vulnerability-analysis/
         ├── SKILL.md
         └── README.md
 ```
