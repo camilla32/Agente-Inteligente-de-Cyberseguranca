@@ -109,7 +109,7 @@ Projeto desenvolvido como proposta de aplicação prática dos conhecimentos do 
 
 ## 👩‍💻 Autoria
 
-Projeto educacional **CyberGuard AI** desenvolvido por Camila Silva para o Bootcamp Santader Cybersegurança.
+Projeto educacional **CyberGuard AI** desenvolvido por Camila Silva.
 
 ---
 
