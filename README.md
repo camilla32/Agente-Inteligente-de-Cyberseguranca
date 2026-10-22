@@ -82,7 +82,7 @@ CyberGuard-AI/
 - **ChatGPT, Gemini:** tecnologia utilizada para desenvolver o agente.
 - **Inteligência artificial:** integração futura para interpretar cenários e elaborar recomendações, caso seja configurado um modelo compatível.
 
-> **Observação:** a estrutura inicial contém arquivos de documentação e instruções. A interface web e a integração funcional com um modelo de IA serão desenvolvidas nas próximas etapas.
+> **Observação:** a estrutura inicial contém arquivos de documentação e instruções. A interface web e a integração funcional com um modelo de IA serão recursos a ser desenvolvidos.
 
 ## 🔐 Segurança e uso responsável
 
